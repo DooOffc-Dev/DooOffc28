@@ -48,14 +48,11 @@ const config = {
   bubbleBgColor: '#ffffff', textColor: '#161823',
 };
 
-// ---------- HELPER FUNCTIONS ----------
 function fetchBuffer(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
     client.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-      if (res.statusCode === 301 || res.statusCode === 302) {
-        return fetchBuffer(res.headers.location).then(resolve).catch(reject);
-      }
+      if (res.statusCode === 301 || res.statusCode === 302) return fetchBuffer(res.headers.location).then(resolve).catch(reject);
       if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode} → ${url}`));
       const chunks = [];
       res.on('data', c => chunks.push(c));
@@ -67,13 +64,11 @@ function fetchBuffer(url) {
 
 async function ensureAssets() {
   await mkdir(FONTS_DIR, { recursive: true });
-
   if (!existsSync(TEMPLATE_PATH)) {
     console.log('Mengunduh template...');
     await writeFile(TEMPLATE_PATH, await fetchBuffer(TEMPLATE_URL));
     console.log('Template OK');
   }
-
   for (const font of FONT_ASSETS) {
     const dest = join(FONTS_DIR, font.file);
     if (!existsSync(dest)) {
@@ -86,9 +81,7 @@ async function ensureAssets() {
 }
 
 async function loadImageSmart(src) {
-  if (src.startsWith('http://') || src.startsWith('https://')) {
-    return loadImage(await fetchBuffer(src));
-  }
+  if (src.startsWith('http://') || src.startsWith('https://')) return loadImage(await fetchBuffer(src));
   return loadImage(src);
 }
 
@@ -152,7 +145,6 @@ function drawCircleImage(ctx, img, cx, cy, r) {
 
 async function generateChatImage(username, chatText) {
   await ensureAssets();
-
   const USERNAME   = username  ?? 'DooOfficiall';
   const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
   const AVATAR_SRC = 'https://cdn.phototourl.com/free/2026-06-24-b1e6b803-cb43-403b-9046-1b88abdaeeed.webp';
@@ -230,7 +222,8 @@ async function generateChatImage(username, chatText) {
 
 // ---------- ROUTES ----------
 app.get('/', (req, res) => {
-  res.sendFile(join(__dirname, 'public', 'index.html'));
+  // PATH SUDAH DIUBAH KE ROOT (BUKAN public/index.html)
+  res.sendFile(join(__dirname, 'index.html'));
 });
 
 app.post('/generate', async (req, res) => {
@@ -246,7 +239,6 @@ app.post('/generate', async (req, res) => {
   }
 });
 
-// ---------- START SERVER ----------
 ensureAssets().then(() => {
   app.listen(PORT, () => {
     console.log(`🔥 DooHIGH TTQC API running on port ${PORT}`);
