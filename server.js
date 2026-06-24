@@ -16,12 +16,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// ---------- ASSETS CONFIG (UBAH KE CDN) ----------
+// ---------- ASSETS CONFIG ----------
 const ASSETS_DIR    = join(__dirname, 'assets');
 const FONTS_DIR     = join(ASSETS_DIR, 'fonts');
 const TEMPLATE_PATH = join(ASSETS_DIR, 'template.png');
 
-// GANTI LINK RAW GITHUB JADI JSDELIVR
+// SEMUA LINK RAW GITHUB DIGANTI PAKAI CDN JSDELIVR (ANTI ERROR)
 const TEMPLATE_URL  = 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/qyzwa.png';
 
 const FONT_ASSETS = [
@@ -88,10 +88,17 @@ async function ensureAssets() {
 }
 
 async function loadImageSmart(src) {
-  if (src.startsWith('http://') || src.startsWith('https://')) {
-    return loadImage(await fetchBuffer(src));
+  try {
+    if (src.startsWith('http://') || src.startsWith('https://')) {
+      return await loadImage(await fetchBuffer(src));
+    }
+    return await loadImage(src);
+  } catch (error) {
+    console.warn(`⚠️ Gagal load gambar dari: ${src}. Pakai gambar fallback.`);
+    // Jika gagal, pakai gambar fallback Ditzzx via CDN
+    const fallbackUrl = 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
+    return await loadImage(await fetchBuffer(fallbackUrl));
   }
-  return loadImage(src);
 }
 
 function wrapText(ctx, text, maxWidth) {
