@@ -7,46 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        /* ----- SEMUA WARNA DIUBAH KE BIRU DONGKER + NEON BLUE ----- */
-        :root { 
-            --bg-body: #0a0e17; 
-            --bg-card: rgba(10, 14, 23, 0.85); 
-            --border-card: rgba(0, 150, 255, 0.25); 
-            --text-main: #e2e8f0; 
-            --text-muted: #94a3b8; 
-            --bg-input: #111827; 
-            --border-input: #1e293b; 
-            --shadow-card: 0 20px 60px rgba(0, 150, 255, 0.1); 
-            --toggle-bg: #1e293b; 
-            --toggle-border: #0096ff; 
-            --toggle-text: #e2e8f0; 
-            --error-bg: #1e1e2f; 
-            --error-border: #ff4444; 
-            --error-text: #ff6666;
-            --primary-blue: #0096ff;
-            --dark-navy: #0a0e17;
-        }
-
-        /* Dark mode (tetap sama, biar konsisten) */
-        .dark { 
-            --bg-body: #0a0e17; 
-            --bg-card: rgba(10, 14, 23, 0.9); 
-            --border-card: rgba(0, 150, 255, 0.3); 
-            --text-main: #f1f5f9; 
-            --text-muted: #94a3b8; 
-            --bg-input: #111827; 
-            --border-input: #1e293b; 
-            --shadow-card: 0 20px 60px rgba(0, 150, 255, 0.2); 
-            --toggle-bg: #1e293b; 
-            --toggle-border: #0096ff; 
-            --toggle-text: #f1f5f9; 
-            --error-bg: #1e1e2f; 
-            --error-border: #ff4444; 
-            --error-text: #ff6666;
-        }
-
-        /* Light mode (kita ubah juga biar match, tapi tetap terang) */
-        .light { 
+        /* ----- CSS VARIABLES UNTUK THEME ----- */
+        :root {
+            /* LIGHT THEME (DEFAULT) */
             --bg-body: #f8fafc; 
             --bg-card: rgba(255, 255, 255, 0.85); 
             --border-card: rgba(0, 150, 255, 0.2); 
@@ -58,67 +21,116 @@
             --toggle-bg: #ffffff; 
             --toggle-border: #0096ff; 
             --toggle-text: #0f172a; 
+            --toggle-shadow: 0 0 15px rgba(0, 150, 255, 0.1);
             --error-bg: #fef2f2; 
             --error-border: #fecaca; 
             --error-text: #dc2626;
+            --neon-glow: rgba(0, 150, 255, 0.08);
         }
 
-        body { background-color: var(--bg-body); color: var(--text-main); transition: all 0.3s ease; }
-        .glass-card { background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid var(--border-card); box-shadow: var(--shadow-card); transition: all 0.3s ease; }
-        input, textarea { background-color: var(--bg-input) !important; border-color: var(--border-input) !important; color: var(--text-main) !important; transition: all 0.3s ease; }
-        .theme-toggle { background: var(--toggle-bg); border: 1px solid var(--toggle-border); color: var(--toggle-text); }
-        #errorMsg { background: var(--error-bg); border-color: var(--error-border); color: var(--error-text); }
+        /* DARK THEME (AKTIF KALO CLASS 'dark' DITAMBAHKAN) */
+        html.dark {
+            --bg-body: #0a0e17; 
+            --bg-card: rgba(10, 14, 23, 0.85); 
+            --border-card: rgba(0, 150, 255, 0.25); 
+            --text-main: #e2e8f0; 
+            --text-muted: #94a3b8; 
+            --bg-input: #111827; 
+            --border-input: #1e293b; 
+            --shadow-card: 0 20px 60px rgba(0, 150, 255, 0.1); 
+            --toggle-bg: #1e293b; 
+            --toggle-border: #0096ff; 
+            --toggle-text: #e2e8f0; 
+            --toggle-shadow: 0 0 20px rgba(0, 150, 255, 0.3);
+            --error-bg: #1e1e2f; 
+            --error-border: #ff4444; 
+            --error-text: #ff6666;
+            --neon-glow: rgba(0, 150, 255, 0.15);
+        }
 
-        /* Scrollbar biru neon */
+        /* APLIKASI CSS VARIABLES */
+        body { 
+            background-color: var(--bg-body); 
+            color: var(--text-main); 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+        }
+        
+        .glass-card { 
+            background: var(--bg-card); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid var(--border-card); 
+            box-shadow: var(--shadow-card); 
+            transition: all 0.3s ease; 
+        }
+        
+        input, textarea { 
+            background-color: var(--bg-input) !important; 
+            border-color: var(--border-input) !important; 
+            color: var(--text-main) !important; 
+            transition: all 0.3s ease; 
+        }
+        
+        .theme-toggle { 
+            background: var(--toggle-bg); 
+            border: 1px solid var(--toggle-border); 
+            color: var(--toggle-text); 
+            box-shadow: var(--toggle-shadow);
+            transition: all 0.3s ease;
+        }
+
+        #errorMsg { 
+            background: var(--error-bg); 
+            border-color: var(--error-border); 
+            color: var(--error-text); 
+        }
+
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; } 
         ::-webkit-scrollbar-track { background: transparent; } 
         ::-webkit-scrollbar-thumb { background: #0096ff; border-radius: 10px; }
 
-        /* Focus input — neon blue */
+        /* FOCUS INPUT */
         input:focus, textarea:focus { 
             box-shadow: 0 0 0 3px rgba(0, 150, 255, 0.4); 
             border-color: #0096ff !important; 
         }
 
-        /* Tombol toggle */
+        /* TOMBOL TOGGLE */
         .theme-toggle { 
             position: fixed; top: 20px; right: 20px; z-index: 50; 
             width: 48px; height: 48px; border-radius: 50%; 
             display: flex; align-items: center; justify-content: center; 
             font-size: 1.5rem; cursor: pointer; 
-            box-shadow: 0 0 20px rgba(0, 150, 255, 0.2); 
             transition: all 0.3s ease; 
         }
-        .theme-toggle:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 150, 255, 0.4); }
+        .theme-toggle:hover { transform: scale(1.1); }
 
-        /* Tombol Generate — biru neon */
-        .btn-neon {
-            background: linear-gradient(135deg, #0096ff, #0066cc);
-            color: white;
-            border: none;
-            box-shadow: 0 0 25px rgba(0, 150, 255, 0.3);
-            transition: all 0.3s ease;
+        /* TOMBOL GENERATE */
+        .btn-neon { 
+            background: linear-gradient(135deg, #0096ff, #0066cc); 
+            color: white; 
+            border: none; 
+            box-shadow: 0 0 25px rgba(0, 150, 255, 0.3); 
+            transition: all 0.3s ease; 
         }
-        .btn-neon:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 40px rgba(0, 150, 255, 0.5);
-            background: linear-gradient(135deg, #00a6ff, #0077dd);
+        .btn-neon:hover { 
+            transform: scale(1.02); 
+            box-shadow: 0 0 40px rgba(0, 150, 255, 0.5); 
+            background: linear-gradient(135deg, #00a6ff, #0077dd); 
         }
-        .btn-neon:active {
-            transform: scale(0.98);
-        }
+        .btn-neon:active { transform: scale(0.98); }
 
-        /* Icon & aksen biru */
         .text-neon { color: #0096ff; }
-        .border-neon { border-color: #0096ff; }
-        .bg-neon-glow { background: radial-gradient(circle, rgba(0,150,255,0.15) 0%, transparent 70%); }
+        .bg-neon-glow { background: radial-gradient(circle, var(--neon-glow) 0%, transparent 70%); }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4 relative light">
-    <button id="themeToggle" class="theme-toggle"><i class="fas fa-moon" id="themeIcon"></i></button>
+<body class="min-h-screen flex items-center justify-center p-4 relative">
+    <!-- TOMBOL TOGGLE THEME -->
+    <button id="themeToggle" class="theme-toggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
     
     <div class="glass-card max-w-md w-full rounded-3xl p-8 shadow-2xl relative overflow-hidden">
-        <!-- Glow effect biru di belakang -->
         <div class="absolute -top-20 -right-20 w-64 h-64 bg-neon-glow rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-neon-glow rounded-full blur-3xl pointer-events-none"></div>
 
@@ -164,7 +176,6 @@
             <span id="errorText">Terjadi kesalahan</span>
         </div>
 
-        <!-- FOOTER BARU -->
         <div class="mt-8 pt-4 border-t border-[#0096ff]/30 relative z-10">
             <div class="flex flex-col items-center gap-1 text-[10px] tracking-wide text-muted">
                 <p class="text-gray-400 text-center">
@@ -178,31 +189,36 @@
         (function(){
             const themeToggle = document.getElementById('themeToggle');
             const themeIcon = document.getElementById('themeIcon');
-            const html = document.documentElement;
-            let current = localStorage.getItem('theme') || 'light';
+            const htmlElement = document.documentElement;
+
+            // Cek tema tersimpan di localStorage
+            let currentTheme = localStorage.getItem('theme') || 'light';
             
-            function setTheme(t){
-                if(t === 'dark'){
-                    html.classList.remove('light');
-                    html.classList.add('dark');
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    htmlElement.classList.add('dark');
                     themeIcon.classList.remove('fa-moon');
                     themeIcon.classList.add('fa-sun');
+                    localStorage.setItem('theme', 'dark');
                 } else {
-                    html.classList.remove('dark');
-                    html.classList.add('light');
+                    htmlElement.classList.remove('dark');
                     themeIcon.classList.remove('fa-sun');
                     themeIcon.classList.add('fa-moon');
+                    localStorage.setItem('theme', 'light');
                 }
-                localStorage.setItem('theme', t);
             }
-            
-            setTheme(current);
-            
-            themeToggle.addEventListener('click', ()=>{
-                setTheme(html.classList.contains('dark') ? 'light' : 'dark');
+
+            // Terapkan tema awal
+            setTheme(currentTheme);
+
+            // Event listener tombol toggle
+            themeToggle.addEventListener('click', function() {
+                const isDark = htmlElement.classList.contains('dark');
+                setTheme(isDark ? 'light' : 'dark');
             });
 
-            document.getElementById('formGenerate').addEventListener('submit', async (e)=>{
+            // --- LOGIKA FORM GENERATE ---
+            document.getElementById('formGenerate').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnGenerate');
                 const load = document.getElementById('loading');
@@ -222,7 +238,12 @@
                             chatText: document.getElementById('chatText').value 
                         })
                     });
-                    if(!res.ok) throw new Error((await res.json()).message || 'Gagal');
+                    
+                    if(!res.ok) {
+                        const text = await res.text();
+                        throw new Error(text || 'Gagal generate gambar');
+                    }
+
                     const blob = await res.blob();
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
