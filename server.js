@@ -151,9 +151,8 @@ async function generateChatImage(username, chatText) {
   const USERNAME   = username  ?? 'DooOfficiall';
   const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
 
-  // --- GANTI LINK AVATAR DI SINI ---
-  // Link RAW foto baru lo (logo biru A)
-  const AVATAR_SRC = 'https://raw.githubusercontent.com/DooOffc-Dev/foto/main/al_store.webp';
+  // --- LINK AVATAR PAKAI JSDELIVR (CDN ANTI ERROR) ---
+  const AVATAR_SRC = 'https://cdn.jsdelivr.net/gh/DooOffc-Dev/foto@main/avatar.webp';
 
   const templateImage = await loadImage(TEMPLATE_PATH);
   const avatarImage   = await loadImageSmart(AVATAR_SRC);
