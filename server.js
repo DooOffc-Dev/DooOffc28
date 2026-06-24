@@ -16,18 +16,20 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// ---------- ASSETS CONFIG ----------
+// ---------- ASSETS CONFIG (UBAH KE CDN) ----------
 const ASSETS_DIR    = join(__dirname, 'assets');
 const FONTS_DIR     = join(ASSETS_DIR, 'fonts');
 const TEMPLATE_PATH = join(ASSETS_DIR, 'template.png');
-const TEMPLATE_URL  = 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/ttqc/qyzwa.png';
+
+// GANTI LINK RAW GITHUB JADI JSDELIVR
+const TEMPLATE_URL  = 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/qyzwa.png';
 
 const FONT_ASSETS = [
-  { name: 'PlusJakartaSans-Regular', file: 'PlusJakartaSans-Regular.ttf', url: 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/ttqc/PlusJakartaSans-Regular.ttf', family: 'Plus Jakarta Sans' },
-  { name: 'PlusJakartaSans-Medium',  file: 'PlusJakartaSans-Medium.ttf',  url: 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/ttqc/PlusJakartaSans-Medium.ttf',  family: 'Plus Jakarta Sans' },
-  { name: 'PlusJakartaSans-Bold',    file: 'PlusJakartaSans-Bold.ttf',    url: 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/ttqc/PlusJakartaSans-Bold.ttf',    family: 'Plus Jakarta Sans' },
-  { name: 'FontAwesome-Solid',       file: 'fa-solid-900.ttf',            url: 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/main/ttqc/fa-solid-900.ttf',            family: 'Font Awesome 6 Free' },
-  { name: 'NotoColorEmoji',          file: 'NotoColorEmoji.ttf',          url: 'https://github.com/googlefonts/noto-emoji/raw/main/fonts/NotoColorEmoji.ttf',          family: 'Noto Color Emoji' },
+  { name: 'PlusJakartaSans-Regular', file: 'PlusJakartaSans-Regular.ttf', url: 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/PlusJakartaSans-Regular.ttf', family: 'Plus Jakarta Sans' },
+  { name: 'PlusJakartaSans-Medium',  file: 'PlusJakartaSans-Medium.ttf',  url: 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/PlusJakartaSans-Medium.ttf',  family: 'Plus Jakarta Sans' },
+  { name: 'PlusJakartaSans-Bold',    file: 'PlusJakartaSans-Bold.ttf',    url: 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/PlusJakartaSans-Bold.ttf',    family: 'Plus Jakarta Sans' },
+  { name: 'FontAwesome-Solid',       file: 'fa-solid-900.ttf',            url: 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/fa-solid-900.ttf',            family: 'Font Awesome 6 Free' },
+  { name: 'NotoColorEmoji',          file: 'NotoColorEmoji.ttf',          url: 'https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji@main/fonts/NotoColorEmoji.ttf',          family: 'Noto Color Emoji' },
 ];
 
 const MENU_ICONS = [
@@ -159,7 +161,9 @@ async function render(username, chatText, avatarSrc) {
 
   const USERNAME   = username  ?? 'DooOfficiall';
   const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
-  const AVATAR_SRC = avatarSrc ?? 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/6b71d84a580f385bd7ee36402df5341ead4770a0/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
+  
+  // AVATAR DEFAULT DITZZX (PAKAI CDN JSDELIVR)
+  const AVATAR_SRC = avatarSrc ?? 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
 
   const templateImage = await loadImage(TEMPLATE_PATH);
   const avatarImage   = await loadImageSmart(AVATAR_SRC);
@@ -245,7 +249,7 @@ app.post('/generate', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="ttqc-chat.png"');
     res.send(imageBuffer);
   } catch (error) {
-    console.error(error);
+    console.error('🔥 ERROR DI BACKEND:', error.message);
     res.status(500).json({ error: 'Gagal generate gambar', message: error.message });
   }
 });
