@@ -151,6 +151,14 @@
                           class="w-full rounded-xl px-4 py-3 outline-none border shadow-sm transition-all placeholder-gray-500 resize-none"
                           placeholder="Tulis pesan di sini...">Just friend kok cemburu 😂😂</textarea>
             </div>
+            <div>
+                <label class="block text-sm font-semibold mb-1.5 text-muted">
+                    <i class="fas fa-image text-neon mr-1"></i> URL Avatar (Opsional)
+                </label>
+                <input type="text" id="avatarUrl"
+                       value="https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/6b71d84a580f385bd7ee36402df5341ead4770a0/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg"
+                       class="w-full rounded-xl px-4 py-3 outline-none border shadow-sm transition-all placeholder-gray-500">
+            </div>
 
             <button type="submit" id="btnGenerate" class="btn-neon w-full font-bold py-3.5 rounded-xl flex items-center justify-center gap-2">
                 <i class="fas fa-download"></i> Generate & Download
@@ -222,7 +230,8 @@
                         headers:{'Content-Type':'application/json'},
                         body: JSON.stringify({
                             username: document.getElementById('username').value,
-                            chatText: document.getElementById('chatText').value
+                            chatText: document.getElementById('chatText').value,
+                            avatarUrl: document.getElementById('avatarUrl').value
                         })
                     });
 
