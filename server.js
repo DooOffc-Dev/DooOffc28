@@ -16,6 +16,7 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
+// ---------- ASSETS CONFIG ----------
 const ASSETS_DIR    = join(__dirname, 'assets');
 const FONTS_DIR     = join(ASSETS_DIR, 'fonts');
 const TEMPLATE_PATH = join(ASSETS_DIR, 'template.png');
@@ -30,12 +31,12 @@ const FONT_ASSETS = [
 ];
 
 const MENU_ICONS = [
-  { unicode: '\uf3e5', text: 'Balas', color: '#000000' },
-  { unicode: '\uf064', text: 'Teruskan', color: '#000000' },
-  { unicode: '\uf0c5', text: 'Salin', color: '#000000' },
-  { unicode: '\uf1ab', text: 'Terjemahkan', color: '#000000' },
+  { unicode: '\uf3e5', text: 'Balas',           color: '#000000' },
+  { unicode: '\uf064', text: 'Teruskan',         color: '#000000' },
+  { unicode: '\uf0c5', text: 'Salin',            color: '#000000' },
+  { unicode: '\uf1ab', text: 'Terjemahkan',      color: '#000000' },
   { unicode: '\uf2ed', text: 'Hapus untuk saya', color: '#000000' },
-  { unicode: '\uf024', text: 'Laporkan', color: '#ea4335' },
+  { unicode: '\uf024', text: 'Laporkan',         color: '#ea4335' },
 ];
 
 const config = {
@@ -47,11 +48,14 @@ const config = {
   bubbleBgColor: '#ffffff', textColor: '#161823',
 };
 
+// ---------- HELPER FUNCTIONS ----------
 function fetchBuffer(url) {
   return new Promise((resolve, reject) => {
     const client = url.startsWith('https') ? https : http;
     client.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } }, (res) => {
-      if (res.statusCode === 301 || res.statusCode === 302) return fetchBuffer(res.headers.location).then(resolve).catch(reject);
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return fetchBuffer(res.headers.location).then(resolve).catch(reject);
+      }
       if (res.statusCode !== 200) return reject(new Error(`HTTP ${res.statusCode} → ${url}`));
       const chunks = [];
       res.on('data', c => chunks.push(c));
@@ -62,29 +66,29 @@ function fetchBuffer(url) {
 }
 
 async function ensureAssets() {
-  try {
-    await mkdir(FONTS_DIR, { recursive: true });
-    if (!existsSync(TEMPLATE_PATH)) {
-      console.log('Mengunduh template...');
-      await writeFile(TEMPLATE_PATH, await fetchBuffer(TEMPLATE_URL));
-      console.log('Template OK');
+  await mkdir(FONTS_DIR, { recursive: true });
+
+  if (!existsSync(TEMPLATE_PATH)) {
+    console.log('Mengunduh template...');
+    await writeFile(TEMPLATE_PATH, await fetchBuffer(TEMPLATE_URL));
+    console.log('Template OK');
+  }
+
+  for (const font of FONT_ASSETS) {
+    const dest = join(FONTS_DIR, font.file);
+    if (!existsSync(dest)) {
+      console.log(`Mengunduh font ${font.name}...`);
+      await writeFile(dest, await fetchBuffer(font.url));
+      console.log(`Font ${font.name} OK`);
     }
-    for (const font of FONT_ASSETS) {
-      const dest = join(FONTS_DIR, font.file);
-      if (!existsSync(dest)) {
-        console.log(`Mengunduh font ${font.name}...`);
-        await writeFile(dest, await fetchBuffer(font.url));
-        console.log(`Font ${font.name} OK`);
-      }
-      GlobalFonts.registerFromPath(dest, font.family);
-    }
-  } catch (error) {
-    console.warn('⚠️ Gagal mengunduh asset:', error.message);
+    GlobalFonts.registerFromPath(dest, font.family);
   }
 }
 
 async function loadImageSmart(src) {
-  if (src.startsWith('http://') || src.startsWith('https://')) return loadImage(await fetchBuffer(src));
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    return loadImage(await fetchBuffer(src));
+  }
   return loadImage(src);
 }
 
@@ -92,9 +96,11 @@ function wrapText(ctx, text, maxWidth) {
   const words = text.split(/(\s+)/);
   const lines = [];
   let currentLine = '';
+
   for (const word of words) {
     if (!word) continue;
     if (word.trim() === '' && currentLine === '') continue;
+
     const testLine = currentLine + word;
     if (ctx.measureText(testLine).width > maxWidth) {
       if (currentLine !== '') {
@@ -108,7 +114,9 @@ function wrapText(ctx, text, maxWidth) {
       currentLine = testLine;
     }
   }
-  if (currentLine.trim()) lines.push(currentLine.trimEnd());
+  if (currentLine.trim()) {
+    lines.push(currentLine.trimEnd());
+  }
   return lines;
 }
 
@@ -146,13 +154,12 @@ function drawCircleImage(ctx, img, cx, cy, r) {
   ctx.restore();
 }
 
-async function generateChatImage(username, chatText) {
+async function render(username, chatText, avatarSrc) {
   await ensureAssets();
+
   const USERNAME   = username  ?? 'DooOfficiall';
   const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
-
-  // --- GANTI AVATAR KE PUNYA DITZZX ---
-  const AVATAR_SRC = 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/6b71d84a580f385bd7ee36402df5341ead4770a0/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
+  const AVATAR_SRC = avatarSrc ?? 'https://raw.githubusercontent.com/Ditzzx-vibecoder/Assets/6b71d84a580f385bd7ee36402df5341ead4770a0/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
 
   const templateImage = await loadImage(TEMPLATE_PATH);
   const avatarImage   = await loadImageSmart(AVATAR_SRC);
@@ -225,30 +232,31 @@ async function generateChatImage(username, chatText) {
   return await canvas.encode('png');
 }
 
+// ---------- ROUTES ----------
 app.get('/', (req, res) => {
   res.sendFile(join(__dirname, 'index.html'));
 });
 
 app.post('/generate', async (req, res) => {
   try {
-    const { username, chatText } = req.body;
-    const imageBuffer = await generateChatImage(username, chatText);
+    const { username, chatText, avatarUrl } = req.body;
+    const imageBuffer = await render(username, chatText, avatarUrl);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Disposition', 'attachment; filename="ttqc-chat.png"');
     res.send(imageBuffer);
   } catch (error) {
-    console.error('🔥 ERROR DI BACKEND:', error.message);
+    console.error(error);
     res.status(500).json({ error: 'Gagal generate gambar', message: error.message });
   }
 });
 
+// ---------- START SERVER ----------
 ensureAssets().then(() => {
   app.listen(PORT, () => {
     console.log(`🔥 DooHIGH TTQC API running on port ${PORT}`);
+    console.log(`📡 POST /generate`);
   });
 }).catch(err => {
   console.error('Gagal load assets:', err);
-  app.listen(PORT, () => {
-    console.log(`🔥 Server tetap berjalan meskipun asset gagal load di port ${PORT}`);
-  });
+  process.exit(1);
 });
