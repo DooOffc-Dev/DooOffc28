@@ -80,7 +80,6 @@ async function ensureAssets() {
     }
   } catch (error) {
     console.warn('⚠️ Gagal mengunduh asset:', error.message);
-    console.warn('⚠️ Server tetap berjalan, tapi font/template mungkin tidak terbaca.');
   }
 }
 
@@ -151,7 +150,10 @@ async function generateChatImage(username, chatText) {
   await ensureAssets();
   const USERNAME   = username  ?? 'DooOfficiall';
   const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
-  const AVATAR_SRC = 'https://cdn.phototourl.com/free/2026-06-24-b1e6b803-cb43-403b-9046-1b88abdaeeed.webp';
+
+  // --- GANTI LINK AVATAR DI SINI ---
+  // Link RAW foto baru lo (logo biru A)
+  const AVATAR_SRC = 'https://raw.githubusercontent.com/DooOffc-Dev/foto/main/al_store.webp';
 
   const templateImage = await loadImage(TEMPLATE_PATH);
   const avatarImage   = await loadImageSmart(AVATAR_SRC);
