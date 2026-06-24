@@ -16,7 +16,6 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(bodyParser.json({ limit: '10mb' }));
 
-// ---------- ASSETS CONFIG ----------
 const ASSETS_DIR    = join(__dirname, 'assets');
 const FONTS_DIR     = join(ASSETS_DIR, 'fonts');
 const TEMPLATE_PATH = join(ASSETS_DIR, 'template.png');
@@ -31,12 +30,12 @@ const FONT_ASSETS = [
 ];
 
 const MENU_ICONS = [
-  { unicode: '\uf3e5', text: 'Balas',           color: '#000000' },
-  { unicode: '\uf064', text: 'Teruskan',         color: '#000000' },
-  { unicode: '\uf0c5', text: 'Salin',            color: '#000000' },
-  { unicode: '\uf1ab', text: 'Terjemahkan',      color: '#000000' },
+  { unicode: '\uf3e5', text: 'Balas', color: '#000000' },
+  { unicode: '\uf064', text: 'Teruskan', color: '#000000' },
+  { unicode: '\uf0c5', text: 'Salin', color: '#000000' },
+  { unicode: '\uf1ab', text: 'Terjemahkan', color: '#000000' },
   { unicode: '\uf2ed', text: 'Hapus untuk saya', color: '#000000' },
-  { unicode: '\uf024', text: 'Laporkan',         color: '#ea4335' },
+  { unicode: '\uf024', text: 'Laporkan', color: '#ea4335' },
 ];
 
 const config = {
@@ -63,20 +62,25 @@ function fetchBuffer(url) {
 }
 
 async function ensureAssets() {
-  await mkdir(FONTS_DIR, { recursive: true });
-  if (!existsSync(TEMPLATE_PATH)) {
-    console.log('Mengunduh template...');
-    await writeFile(TEMPLATE_PATH, await fetchBuffer(TEMPLATE_URL));
-    console.log('Template OK');
-  }
-  for (const font of FONT_ASSETS) {
-    const dest = join(FONTS_DIR, font.file);
-    if (!existsSync(dest)) {
-      console.log(`Mengunduh font ${font.name}...`);
-      await writeFile(dest, await fetchBuffer(font.url));
-      console.log(`Font ${font.name} OK`);
+  try {
+    await mkdir(FONTS_DIR, { recursive: true });
+    if (!existsSync(TEMPLATE_PATH)) {
+      console.log('Mengunduh template...');
+      await writeFile(TEMPLATE_PATH, await fetchBuffer(TEMPLATE_URL));
+      console.log('Template OK');
     }
-    GlobalFonts.registerFromPath(dest, font.family);
+    for (const font of FONT_ASSETS) {
+      const dest = join(FONTS_DIR, font.file);
+      if (!existsSync(dest)) {
+        console.log(`Mengunduh font ${font.name}...`);
+        await writeFile(dest, await fetchBuffer(font.url));
+        console.log(`Font ${font.name} OK`);
+      }
+      GlobalFonts.registerFromPath(dest, font.family);
+    }
+  } catch (error) {
+    console.warn('⚠️ Gagal mengunduh asset:', error.message);
+    console.warn('⚠️ Server tetap berjalan, tapi font/template mungkin tidak terbaca.');
   }
 }
 
@@ -220,9 +224,7 @@ async function generateChatImage(username, chatText) {
   return await canvas.encode('png');
 }
 
-// ---------- ROUTES ----------
 app.get('/', (req, res) => {
-  // PATH SUDAH DIUBAH KE ROOT (BUKAN public/index.html)
   res.sendFile(join(__dirname, 'index.html'));
 });
 
@@ -234,7 +236,7 @@ app.post('/generate', async (req, res) => {
     res.setHeader('Content-Disposition', 'attachment; filename="ttqc-chat.png"');
     res.send(imageBuffer);
   } catch (error) {
-    console.error(error);
+    console.error('🔥 ERROR DI BACKEND:', error.message);
     res.status(500).json({ error: 'Gagal generate gambar', message: error.message });
   }
 });
@@ -242,9 +244,10 @@ app.post('/generate', async (req, res) => {
 ensureAssets().then(() => {
   app.listen(PORT, () => {
     console.log(`🔥 DooHIGH TTQC API running on port ${PORT}`);
-    console.log(`📡 POST /generate`);
   });
 }).catch(err => {
   console.error('Gagal load assets:', err);
-  process.exit(1);
+  app.listen(PORT, () => {
+    console.log(`🔥 Server tetap berjalan meskipun asset gagal load di port ${PORT}`);
+  });
 });
