@@ -9,7 +9,6 @@
     <style>
         /* ----- CSS VARIABLES UNTUK LIGHT & DARK ----- */
         :root {
-            /* LIGHT MODE (PUTIH) */
             --bg-body: #f8fafc;
             --bg-card: rgba(255, 255, 255, 0.85);
             --border-card: rgba(0, 150, 255, 0.2);
@@ -28,7 +27,6 @@
             --neon-glow: rgba(0, 150, 255, 0.08);
         }
 
-        /* DARK MODE (BIRU DONGKER) - AKTIF SAAT CLASS 'dark' DITAMBAHKAN */
         html.dark {
             --bg-body: #0a0e17;
             --bg-card: rgba(10, 14, 23, 0.85);
@@ -48,7 +46,6 @@
             --neon-glow: rgba(0, 150, 255, 0.15);
         }
 
-        /* ----- APLIKASI VARIABEL ----- */
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
@@ -121,7 +118,6 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 relative">
-    <!-- TOMBOL TOGGLE THEME -->
     <button id="themeToggle" class="theme-toggle">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
@@ -141,6 +137,7 @@
         </div>
 
         <form id="formGenerate" class="space-y-5 relative z-10">
+            <!-- INPUT NAMA -->
             <div>
                 <label class="block text-sm font-semibold mb-1.5 text-muted">
                     <i class="fas fa-user text-neon mr-1"></i> Nama Pengguna
@@ -149,6 +146,8 @@
                        placeholder="your name"
                        class="w-full rounded-xl px-4 py-3 outline-none border shadow-sm transition-all placeholder-gray-500">
             </div>
+            
+            <!-- INPUT PESAN -->
             <div>
                 <label class="block text-sm font-semibold mb-1.5 text-muted">
                     <i class="fas fa-comment-dots text-neon mr-1"></i> Teks Pesan
@@ -158,6 +157,9 @@
                           class="w-full rounded-xl px-4 py-3 outline-none border shadow-sm transition-all placeholder-gray-500 resize-none"></textarea>
             </div>
             
+            <!-- INPUT AVATAR HIDDEN (PENTING BIAR BACKEND GAK ERROR) -->
+            <input type="hidden" id="avatarUrl" value="https://files.catbox.moe/vjr6jb.jpg">
+
             <button type="submit" id="btnGenerate" class="btn-neon w-full font-bold py-3.5 rounded-xl flex items-center justify-center gap-2">
                 <i class="fas fa-download"></i> Generate & Download
             </button>
@@ -193,7 +195,6 @@
             const themeIcon = document.getElementById('themeIcon');
             const htmlElement = document.documentElement;
 
-            // Cek tema tersimpan di localStorage
             let currentTheme = localStorage.getItem('theme') || 'dark';
 
             function setTheme(theme) {
@@ -210,16 +211,13 @@
                 }
             }
 
-            // Terapkan tema awal
             setTheme(currentTheme);
 
-            // Event listener untuk tombol toggle
             themeToggle.addEventListener('click', function() {
                 const isDark = htmlElement.classList.contains('dark');
                 setTheme(isDark ? 'light' : 'dark');
             });
 
-            // LOGIKA FORM GENERATE
             document.getElementById('formGenerate').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnGenerate');
@@ -232,12 +230,14 @@
                 err.classList.add('hidden');
 
                 try {
+                    // KIRIM SEMUA DATA TERMASUK AVATAR HIDDEN
                     const res = await fetch('/generate', {
                         method:'POST',
                         headers:{'Content-Type':'application/json'},
                         body: JSON.stringify({
                             username: document.getElementById('username').value,
-                            chatText: document.getElementById('chatText').value
+                            chatText: document.getElementById('chatText').value,
+                            avatarUrl: document.getElementById('avatarUrl').value
                         })
                     });
 
