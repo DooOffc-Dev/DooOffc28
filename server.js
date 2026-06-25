@@ -20,8 +20,6 @@ app.use(bodyParser.json({ limit: '10mb' }));
 const ASSETS_DIR    = join(__dirname, 'assets');
 const FONTS_DIR     = join(ASSETS_DIR, 'fonts');
 const TEMPLATE_PATH = join(ASSETS_DIR, 'template.png');
-
-// SEMUA LINK RAW GITHUB DIGANTI PAKAI CDN JSDELIVR (ANTI ERROR)
 const TEMPLATE_URL  = 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/ttqc/qyzwa.png';
 
 const FONT_ASSETS = [
@@ -95,7 +93,7 @@ async function loadImageSmart(src) {
     return await loadImage(src);
   } catch (error) {
     console.warn(`⚠️ Gagal load gambar dari: ${src}. Pakai gambar fallback.`);
-    // Jika gagal, pakai gambar fallback Ditzzx via CDN
+    // Fallback ke avatar Ditzzx via CDN
     const fallbackUrl = 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
     return await loadImage(await fetchBuffer(fallbackUrl));
   }
@@ -163,14 +161,14 @@ function drawCircleImage(ctx, img, cx, cy, r) {
   ctx.restore();
 }
 
-async function render(username, chatText, avatarSrc) {
+async function generateChatImage(username, chatText) {
   await ensureAssets();
 
-  const USERNAME   = username  ?? 'DooOfficiall';
-  const CHAT_TEXT  = chatText  ?? 'Just friend kok cemburu 😂😂';
+  const USERNAME   = username  ?? 'your name';
+  const CHAT_TEXT  = chatText  ?? 'Cihuy Ada doo 😹';
   
-  // AVATAR DEFAULT DITZZX (PAKAI CDN JSDELIVR)
-  const AVATAR_SRC = avatarSrc ?? 'https://cdn.jsdelivr.net/gh/Ditzzx-vibecoder/Assets@main/Image/artworks-gWLRE6HyPH3DgVMG-ZFFxtg-t500x500.jpg';
+  // AVATAR SUDAH DIHARDCODE PAKAI LINK CATBOX LO
+  const AVATAR_SRC = 'https://files.catbox.moe/vjr6jb.jpg';
 
   const templateImage = await loadImage(TEMPLATE_PATH);
   const avatarImage   = await loadImageSmart(AVATAR_SRC);
@@ -250,8 +248,8 @@ app.get('/', (req, res) => {
 
 app.post('/generate', async (req, res) => {
   try {
-    const { username, chatText, avatarUrl } = req.body;
-    const imageBuffer = await render(username, chatText, avatarUrl);
+    const { username, chatText } = req.body;
+    const imageBuffer = await generateChatImage(username, chatText);
     res.setHeader('Content-Type', 'image/png');
     res.setHeader('Content-Disposition', 'attachment; filename="ttqc-chat.png"');
     res.send(imageBuffer);
