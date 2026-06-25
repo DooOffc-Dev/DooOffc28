@@ -7,7 +7,29 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        /* ----- CSS VARIABLES UNTUK LIGHT & DARK ----- */
         :root {
+            /* LIGHT MODE (PUTIH) */
+            --bg-body: #f8fafc;
+            --bg-card: rgba(255, 255, 255, 0.85);
+            --border-card: rgba(0, 150, 255, 0.2);
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --bg-input: #ffffff;
+            --border-input: #cbd5e1;
+            --shadow-card: 0 20px 60px rgba(0, 150, 255, 0.08);
+            --toggle-bg: #ffffff;
+            --toggle-border: #0096ff;
+            --toggle-text: #0f172a;
+            --toggle-shadow: 0 0 15px rgba(0, 150, 255, 0.1);
+            --error-bg: #fef2f2;
+            --error-border: #fecaca;
+            --error-text: #dc2626;
+            --neon-glow: rgba(0, 150, 255, 0.08);
+        }
+
+        /* DARK MODE (BIRU DONGKER) - AKTIF SAAT CLASS 'dark' DITAMBAHKAN */
+        html.dark {
             --bg-body: #0a0e17;
             --bg-card: rgba(10, 14, 23, 0.85);
             --border-card: rgba(0, 150, 255, 0.25);
@@ -26,10 +48,11 @@
             --neon-glow: rgba(0, 150, 255, 0.15);
         }
 
+        /* ----- APLIKASI VARIABEL ----- */
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
 
         .glass-card {
@@ -98,6 +121,7 @@
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 relative">
+    <!-- TOMBOL TOGGLE THEME -->
     <button id="themeToggle" class="theme-toggle">
         <i class="fas fa-moon" id="themeIcon"></i>
     </button>
@@ -149,7 +173,6 @@
             <span id="errorText">Terjadi kesalahan</span>
         </div>
 
-        <!-- FOOTER DENGAN USERNAME TIKTOK & IG -->
         <div class="mt-8 pt-4 border-t border-[#0096ff]/30 relative z-10">
             <div class="flex flex-col items-center gap-1 text-[10px] tracking-wide text-muted">
                 <p class="text-gray-400 text-center">
@@ -170,6 +193,7 @@
             const themeIcon = document.getElementById('themeIcon');
             const htmlElement = document.documentElement;
 
+            // Cek tema tersimpan di localStorage
             let currentTheme = localStorage.getItem('theme') || 'dark';
 
             function setTheme(theme) {
@@ -186,13 +210,16 @@
                 }
             }
 
+            // Terapkan tema awal
             setTheme(currentTheme);
 
+            // Event listener untuk tombol toggle
             themeToggle.addEventListener('click', function() {
                 const isDark = htmlElement.classList.contains('dark');
                 setTheme(isDark ? 'light' : 'dark');
             });
 
+            // LOGIKA FORM GENERATE
             document.getElementById('formGenerate').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('btnGenerate');
